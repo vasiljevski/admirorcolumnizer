@@ -17,10 +17,12 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.event.plugin');
 jimport('joomla.plugin.plugin');
 
-class plgContentAdmirorcolumnizer extends JPlugin {
+class plgContentAdmirorcolumnizer extends JPlugin
+{
 
     //Constructor
-    function plgContentAdmirorcolumnizer(&$subject) {
+    function __construct(&$subject)
+    {
         parent::__construct($subject);
 
         $this->plugin = JPluginHelper::getPlugin('content', 'admirorcolumnizer');
@@ -30,16 +32,18 @@ class plgContentAdmirorcolumnizer extends JPlugin {
     }
 
     //Joomla 1.5
-    public function onPrepareContent(&$row, &$params, $limitstart = 0) {
+    public function onPrepareContent($row, &$params, $limitstart = 0)
+    {
         if (preg_match("#{AC[^}]*}(.*?){/AC}#s", strtoupper($row->text))) {
             $row->text = $this->textToColumns($row->text);
         }
     }
 
     //Joomla 1.6 and > function 
-    public function onContentPrepare($context, &$row, &$params, $page = 0) {
+    public function onContentPrepare($context, &$row, &$params, $page = 0)
+    {
         if (is_object($row)) {
-            return $this->onPrepareContent($row, $params, $page);
+            $this->onPrepareContent($row, $params, $page);
         } else {
             if (preg_match("#{AC[^}]*}(.*?){/AC}#s", strtoupper($row))) {
                 $row = $this->textToColumns($row);
@@ -49,14 +53,15 @@ class plgContentAdmirorcolumnizer extends JPlugin {
     }
 
     //This does all the work :)
-    private function textToColumns($text) {
-        if (preg_match_all("#{AC[^}]*}(.*?){/AC}|{ac[^}]*}(.*?){/ac}#s", $text, $matches, PREG_PATTERN_ORDER) > 0) {
-            require_once (dirname(__FILE__) . '/admirorcolumnizer/scripts/AC_helper.php');
-            $AC = new AC_helper($this->params);
+    private function textToColumns($text)
+    {
+        if (preg_match_all("#{AC[^}]*}(.*?){/AC}|{ac[^}]*}(.*?){/ac}#s", $text, $matches) > 0) {
+            require_once(dirname(__FILE__) . '/admirorcolumnizer/scripts/acHelper.php');
+            $AC = new acHelper($this->params);
             $doc = JFactory::getDocument();
             $html = "";
             foreach ($matches[0] as $matchKey => $matchValue) {
-                $html = $AC->AC_createColumns(preg_replace("/{.+?}/", "", $matchValue), $matchValue, $matchKey . "_" . rand(0, 1000000), $doc->direction);
+                $html = $AC->acCreateColumns(preg_replace("/{.+?}/", "", $matchValue), $matchValue, $matchKey . "_" . rand(0, 1000000), $doc->direction);
                 $text = str_replace($matchValue, $html, $text);
             }
             if ($AC->params['hyphenator']) {
@@ -66,7 +71,7 @@ class plgContentAdmirorcolumnizer extends JPlugin {
                 } else {
                     $doc->addScript(JURI::root() . 'plugins/content/admirorcolumnizer/admirorcolumnizer/scripts/Hyphenator.js');
                 }
-                $text.= '
+                $text .= '
                             <!-- AdmirorColumnizer 3 -->
                             <script type="text/javascript">
                                     Hyphenator.run();
@@ -79,5 +84,3 @@ class plgContentAdmirorcolumnizer extends JPlugin {
 
 }
 
-//class plgContentAdmirorcolumnizer extends JPlugin
-?>
