@@ -8,14 +8,14 @@
   # @license - http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
   # Websites: http://www.admiror-design-studio.com/joomla-extensions
   # Technical Support:  Forum - http://www.vasiljevski.com/forum/index.php
+  # Version: 5.0.0
   ------------------------------------------------------------------------- */
 
 // no direct access
-defined('_JEXEC') or die('Restricted access');
+defined('_JEXEC') or die;
 
-// Import library dependencies
-jimport('joomla.event.plugin');
-jimport('joomla.plugin.plugin');
+use Joomla\CMS\Language\Multilanguage;
+use Joomla\CMS\Plugin\CMSPlugin;
 
 class plgContentAdmirorcolumnizer extends JPlugin
 {
@@ -24,9 +24,7 @@ class plgContentAdmirorcolumnizer extends JPlugin
     function __construct(&$subject)
     {
         parent::__construct($subject);
-
-        $this->plugin = JPluginHelper::getPlugin('content', 'admirorcolumnizer');
-        $this->params = new JRegistry($this->plugin->params);
+        $this->params = new JRegistry($this->params);
         // load current language
         $this->loadLanguage();
     }
@@ -65,8 +63,7 @@ class plgContentAdmirorcolumnizer extends JPlugin
                 $text = str_replace($matchValue, $html, $text);
             }
             if ($AC->params['hyphenator']) {
-                $version = new JVersion();
-                if ($version->RELEASE == "1.5") {
+                if (Joomla\CMS\Version::MAJOR_VERSION == "1.5") {
                     $doc->addScript(JURI::root() . 'plugins/content/admirorcolumnizer/scripts/Hyphenator.js');
                 } else {
                     $doc->addScript(JURI::root() . 'plugins/content/admirorcolumnizer/admirorcolumnizer/scripts/Hyphenator.js');
